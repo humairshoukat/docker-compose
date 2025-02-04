@@ -1,0 +1,106 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - local
+    volumes:
+      - redis:/data
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - local
+    volumes:
+      - mongo:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+      - local
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - local
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=mufyaheer
+      - POSTGRES_PASSWORD=secret
+
+  pgAdmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgAdmin
+    restart: always
+    ports:
+      - 5555:80
+    networks:
+      - local
+    volumes:
+      - pgAdmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=mufy.aheer@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=secret
+
+  mysql:
+    image: "mariadb:latest"
+    container_name: mysql
+    networks:
+      - local
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=mufyaheer
+      - MYSQL_PASSWORD=secret
+      - MYSQL_DATABASE=mufyaheer
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    depends_on:
+      - mysql
+    networks:
+      - local
+    restart: always
+    environment:
+      - ADMINER_DEFAULT_SERVER=mysql
+      - PHP_CLI_MEMORY_LIMIT=512M
+      - PHP_MAX_EXECUTION_TIME=0
+      - PHP_UPLOAD_MAX_FILESIZE=512
+      - PHP_POST_MAX_SIZE=512M
+    ports:
+      - 4444:8080
+
+networks:
+  local:
+    driver: bridge
+
+volumes:
+  redis:
+  mongo:
+  postgres:
+  pgAdmin:
+  mysql:
+  adminer:
